@@ -2,114 +2,145 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工程造价材料库（终极版·支持二级分部）</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>工程造价材料库（移动端适配+增强保存）</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: "Microsoft YaHei", sans-serif;
+            -webkit-tap-highlight-color: transparent; /* 移除移动端点击高亮 */
         }
         body {
             background-color: #f5f7fa;
             color: #333;
-            padding: 20px;
+            padding: 10px; /* 移动端减少内边距 */
+            font-size: 14px; /* 基础字号适配移动端 */
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px; /* 移动端缩小间距 */
         }
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 1.4rem; /* 移动端缩小标题 */
             color: #2c3e50;
+            flex: 1; /* 标题占满剩余空间 */
         }
+        /* 按钮适配移动端 */
         .btn {
-            padding: 8px 16px;
+            padding: 6px 12px; /* 移动端缩小按钮内边距 */
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* 移动端缩小按钮文字 */
             transition: opacity 0.2s;
+            white-space: nowrap; /* 按钮文字不换行 */
+            touch-action: manipulation; /* 优化移动端触控 */
         }
         .btn:hover { opacity: 0.9; }
-        .btn-success { background-color: #2ecc71; color: white; }
+        .btn-success { background-color: #2c3e50; color: white; }
         .btn-warning { background-color: #f39c12; color: white; }
         .btn-primary { background-color: #3498db; color: white; }
         .btn-danger { background-color: #e74c3c; color: white; }
         .btn-default { background-color: #7f8c8d; color: white; }
+        .btn-info { background-color: #1abc9c; color: white; }
+        .btn-secondary { background-color: #9b59b6; color: white; }
+        .btn-save { background-color: #27ae60; color: white; } /* 新增保存按钮样式 */
 
-        /* 专业分类展开样式 */
         .category-panel {
             background: white;
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px; /* 移动端缩小内边距 */
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .category-panel h3 {
-            font-size: 1rem;
-            margin-bottom: 10px;
+            font-size: 0.95rem; /* 移动端缩小标题 */
+            margin-bottom: 8px;
             color: #34495e;
         }
         .tags {
             display: flex;
-            gap: 8px;
+            gap: 6px; /* 移动端缩小标签间距 */
             flex-wrap: wrap;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         .tag {
-            padding: 6px 12px;
+            padding: 5px 10px; /* 移动端缩小标签内边距 */
             border-radius: 20px;
             background-color: #e0e6ed;
             color: #34495e;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.8rem; /* 移动端缩小标签文字 */
+            touch-action: manipulation;
         }
         .tag.active {
             background-color: #3498db;
             color: white;
         }
 
-        /* 分部管理区域 */
         .sub-category-bar {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 0;
+            gap: 8px; /* 移动端缩小间距 */
+            padding: 8px 0;
             border-top: 1px dashed #ddd;
             border-bottom: 1px dashed #ddd;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            flex-wrap: wrap; /* 移动端允许换行 */
+        }
+        .sub-category-bar span {
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
         .sub-category-bar select {
-            padding: 6px 10px;
+            padding: 5px 8px; /* 移动端缩小内边距 */
             border-radius: 4px;
             border: 1px solid #ddd;
             flex-grow: 1;
-            max-width: 300px;
+            min-width: 120px; /* 移动端最小宽度 */
+            font-size: 0.85rem;
+        }
+        .sub-category-bar input {
+            padding: 5px 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            flex-grow: 1;
+            min-width: 120px;
+            font-size: 0.85rem;
         }
 
-        /* 搜索区 */
         .search-bar {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 15px;
         }
         #search-input {
             flex-grow: 1;
-            padding: 8px 12px;
+            padding: 7px 10px; /* 移动端缩小内边距 */
             border: 1px solid #ddd;
             border-radius: 4px;
             outline: none;
+            font-size: 0.85rem;
         }
 
-        /* 表格样式 */
+        /* 表格容器 - 移动端横向滚动 */
+        .table-container {
+            width: 100%;
+            overflow-x: auto; /* 表格横向滚动 */
+            -webkit-overflow-scrolling: touch; /* 移动端顺滑滚动 */
+            margin-bottom: 15px;
+        }
         .material-table {
             width: 100%;
+            min-width: 800px; /* 表格最小宽度，保证列不挤压 */
             border-collapse: collapse;
             background: white;
             border-radius: 8px;
@@ -117,42 +148,99 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .material-table th, .material-table td {
-            padding: 12px 15px;
+            padding: 8px 10px; /* 移动端缩小单元格内边距 */
             text-align: left;
             border-bottom: 1px solid #eee;
+            font-size: 0.8rem; /* 移动端缩小表格文字 */
         }
         .material-table th {
             background-color: #2c3e50;
             color: white;
             font-weight: normal;
+            position: sticky;
+            top: 0; /* 表头吸顶 */
+            z-index: 10;
         }
         .material-table tr:hover {
             background-color: #f8f9fa;
         }
         .no-result {
             text-align: center;
-            padding: 40px;
+            padding: 30px 10px;
             color: #999;
+            font-size: 0.9rem;
         }
 
-        /* 编辑框样式 */
-        .edit-input {
+        .edit-input, .edit-select {
             width: 100%;
-            padding: 6px 8px;
+            padding: 5px 7px; /* 移动端缩小编辑框内边距 */
             border: 1px solid #3498db;
             border-radius: 4px;
             outline: none;
-        }
-        .edit-select {
-            width: 100%;
-            padding: 6px 8px;
-            border: 1px solid #3498db;
-            border-radius: 4px;
-            outline: none;
+            font-size: 0.8rem;
         }
 
-        /* 隐藏文件输入 */
         #file-input { display: none; }
+
+        /* 保存状态提示 */
+        .save-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: rgba(46, 204, 113, 0.9);
+            color: white;
+            font-size: 0.8rem;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .save-status.show {
+            opacity: 1;
+        }
+
+        /* 备份恢复面板 */
+        .backup-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .backup-panel span {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* 媒体查询 - 小屏手机优化 */
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header > div {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            .btn {
+                flex: 1;
+                min-width: 80px;
+                padding: 5px 8px;
+                font-size: 0.8rem;
+            }
+            .sub-category-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
     </style>
 </head>
 <body>
@@ -164,18 +252,25 @@
         <button class="btn btn-warning" id="export-btn">导出表格</button>
         <label for="file-input" class="btn btn-primary">导入表格</label>
         <input type="file" id="file-input" accept=".csv,.xlsx,.xls">
+        <button class="btn btn-info" id="refresh-btn">刷新数据</button>
+        <button class="btn btn-secondary" id="undo-btn">撤销操作</button>
         <button class="btn btn-danger" id="clear-btn">清空数据</button>
+        <button class="btn btn-save" id="save-btn">手动保存</button> <!-- 新增手动保存按钮 -->
     </div>
 </div>
 
-<!-- 1. 专业分类展开面板 -->
+<!-- 新增备份恢复面板 -->
+<div class="backup-panel">
+    <span>数据管理：</span>
+    <button class="btn btn-default" id="backup-btn">导出备份</button>
+    <button class="btn btn-default" id="restore-btn">导入备份</button>
+    <input type="file" id="restore-file" accept=".json" style="display: none;">
+    <span id="last-save-time">上次保存：首次使用</span>
+</div>
+
 <div class="category-panel">
     <h3>第一步：选择专业类别</h3>
-    <div class="tags" id="main-category-tags">
-        <!-- 由JS动态生成 -->
-    </div>
-
-    <!-- 2. 分部管理区域 (二级分类) -->
+    <div class="tags" id="main-category-tags"></div>
     <div class="sub-category-bar" id="sub-category-container" style="display: none;">
         <span>第二步：选择分部工程</span>
         <select id="sub-category-select">
@@ -186,180 +281,302 @@
     </div>
 </div>
 
-<!-- 搜索框 -->
 <div class="search-bar">
     <input type="text" id="search-input" placeholder="搜索材料名称、规格...">
 </div>
 
-<!-- 材料表格 -->
-<table class="material-table">
-    <thead>
-        <tr>
-            <th>序号</th>
-            <th>专业类别</th>
-            <th>分部工程</th>
-            <th>材料名称</th>
-            <th>单位</th>
-            <th>单价(元)</th>
-            <th>税率(%)</th>
-            <th>规格型号</th>
-            <th>备注</th>
-            <th>操作</th>
-        </tr>
-    </thead>
-    <tbody id="table-body"></tbody>
-</table>
+<!-- 表格容器 - 移动端横向滚动 -->
+<div class="table-container">
+    <table class="material-table">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>专业类别</th>
+                <th>分部工程</th>
+                <th>材料名称</th>
+                <th>单位</th>
+                <th>单价(元)</th>
+                <th>税率(%)</th>
+                <th>规格型号</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+    </table>
+</div>
+
+<!-- 保存状态提示 -->
+<div class="save-status" id="save-status">数据已自动保存</div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-    // ===================== 核心数据结构 =====================
-    // 1. 预设主专业分类
-    const MAIN_CATEGORIES = ["土建", "装饰", "安装", "市政", "园林", "防水保温", "钢材", "其他"];
+    // ===================== 常量与缓存 =====================
+    const MAIN_CATEGORIES = ["土建", "装饰", "安装", "市政", "园林", "防水保温", "钢材", "人工", "其他"];
+    const HISTORY_KEY = 'costLibHistory';
+    const DATA_KEY = 'costLibFinal';
+    const MAX_HISTORY = 20;
+    const SAVE_TIME_KEY = 'costLibSaveTime'; // 保存时间记录
     
-    // 2. 初始化数据 (包含主分类、分部、材料)
-    let appData = JSON.parse(localStorage.getItem('costLibFinal')) || {
-        // 分部库：key是主分类，value是分部数组
-        subCategories: {
-            "土建": ["混凝土工程", "砌筑工程", "钢筋工程", "模板工程"],
-            "装饰": ["楼地面工程", "墙柱面工程", "天棚工程"],
-            "安装": ["给排水工程", "电气工程", "暖通工程"],
-            "市政": ["道路工程", "排水工程"],
-            "园林": ["绿化工程", "景观工程"],
-            "防水保温": ["屋面防水", "外墙保温"],
-            "钢材": ["型材", "板材"],
-            "其他": ["通用辅材"]
-        },
-        // 材料库
-        materials: [
-            { id:1, mainCate:"土建", subCate:"混凝土工程", name:"C30商品混凝土", unit:"m³", price:480, tax:9, spec:"C30", remark:"含泵送费" },
-            { id:2, mainCate:"土建", subCate:"钢筋工程", name:"HRB400E螺纹钢", unit:"t", price:4200, tax:13, spec:"Φ12-25", remark:"大厂国标" },
-            { id:3, mainCate:"装饰", subCate:"墙柱面工程", name:"800*800抛光砖", unit:"块", price:85, tax:13, spec:"800×800mm", remark:"广东产" },
-            { id:4, mainCate:"安装", subCate:"给排水工程", name:"PPR给水管", unit:"米", price:28, tax:13, spec:"DN25", remark:"热熔连接" }
-        ]
+    // DOM元素缓存
+    const DOM = {
+        mainTagContainer: document.getElementById('main-category-tags'),
+        subCategoryContainer: document.getElementById('sub-category-container'),
+        subCategorySelect: document.getElementById('sub-category-select'),
+        newSubNameInput: document.getElementById('new-sub-name'),
+        addSubBtn: document.getElementById('add-sub-btn'),
+        searchInput: document.getElementById('search-input'),
+        tableBody: document.getElementById('table-body'),
+        addMaterialBtn: document.getElementById('add-material-btn'),
+        exportBtn: document.getElementById('export-btn'),
+        fileInput: document.getElementById('file-input'),
+        clearBtn: document.getElementById('clear-btn'),
+        refreshBtn: document.getElementById('refresh-btn'),
+        undoBtn: document.getElementById('undo-btn'),
+        saveBtn: document.getElementById('save-btn'), // 手动保存按钮
+        saveStatus: document.getElementById('save-status'), // 保存状态提示
+        lastSaveTime: document.getElementById('last-save-time'), // 最后保存时间
+        backupBtn: document.getElementById('backup-btn'), // 导出备份
+        restoreBtn: document.getElementById('restore-btn'), // 导入备份
+        restoreFile: document.getElementById('restore-file') // 备份文件选择
     };
 
-    // ===================== DOM元素 =====================
-    const mainTagContainer = document.getElementById('main-category-tags');
-    const subCategoryContainer = document.getElementById('sub-category-container');
-    const subCategorySelect = document.getElementById('sub-category-select');
-    const newSubNameInput = document.getElementById('new-sub-name');
-    const addSubBtn = document.getElementById('add-sub-btn');
-    const searchInput = document.getElementById('search-input');
-    const tableBody = document.getElementById('table-body');
-    const addMaterialBtn = document.getElementById('add-material-btn');
-    const exportBtn = document.getElementById('export-btn');
-    const fileInput = document.getElementById('file-input');
-    const clearBtn = document.getElementById('clear-btn');
+    // ===================== 数据管理 =====================
+    let appData = null;
+    let historyData = null;
+    let currentMainCate = "all";
+    let currentSubCate = "all";
+    let searchDebounceTimer = null;
+    let autoSaveTimer = null; // 自动保存计时器
 
-    // 当前选中状态
-    let currentMainCate = "all"; // 当前选中的主专业
-    let currentSubCate = "all";  // 当前选中的分部
-
-    // ===================== 初始化渲染 =====================
-    init();
-    function init() {
-        renderMainCategoryTags(); // 渲染顶部专业标签
-        renderTable(); // 渲染材料表格
+    // 初始化数据
+    function initData() {
+        // 加载主数据
+        const storedData = localStorage.getItem(DATA_KEY);
+        appData = storedData ? JSON.parse(storedData) : getDefaultData();
+        
+        // 加载历史记录
+        const storedHistory = localStorage.getItem(HISTORY_KEY);
+        historyData = storedHistory ? JSON.parse(storedHistory) : [];
+        
+        // 加载最后保存时间并显示
+        updateLastSaveTime();
     }
 
-    // ===================== 1. 专业分类与分部管理 =====================
-    // 渲染顶部展开的专业标签
+    // 默认数据模板
+    function getDefaultData() {
+        return {
+            subCategories: {
+                "土建": ["混凝土工程", "砌筑工程", "钢筋工程", "模板工程"],
+                "装饰": ["楼地面工程", "墙柱面工程", "天棚工程"],
+                "安装": ["给排水工程", "电气工程", "暖通工程"],
+                "市政": ["道路工程", "排水工程"],
+                "园林": ["绿化工程", "景观工程"],
+                "防水保温": ["屋面防水", "外墙保温"],
+                "钢材": ["型材", "板材"],
+                "人工": ["普工", "技工", "特种作业人员", "管理人员"],
+                "其他": ["通用辅材"]
+            },
+            materials: [
+                { id:1, mainCate:"土建", subCate:"混凝土工程", name:"C30商品混凝土", unit:"m³", price:480, tax:9, spec:"C30", remark:"含泵送费" },
+                { id:2, mainCate:"土建", subCate:"钢筋工程", name:"HRB400E螺纹钢", unit:"t", price:4200, tax:13, spec:"Φ12-25", remark:"大厂国标" },
+                { id:3, mainCate:"装饰", subCate:"墙柱面工程", name:"800*800抛光砖", unit:"块", price:85, tax:13, spec:"800×800mm", remark:"广东产" },
+                { id:4, mainCate:"安装", subCate:"给排水工程", name:"PPR给水管", unit:"米", price:28, tax:13, spec:"DN25", remark:"热熔连接" },
+                { id:5, mainCate:"人工", subCate:"普工", name:"普工日工资", unit:"工日", price:260, tax:0, spec:"8小时", remark:"含社保" }
+            ]
+        };
+    }
+
+    // ===================== 保存功能增强 =====================
+    // 保存数据（核心保存函数，增加保存时间记录）
+    function saveData(showTip = true) {
+        try {
+            localStorage.setItem(DATA_KEY, JSON.stringify(appData));
+            // 记录保存时间
+            const saveTime = new Date().toLocaleString();
+            localStorage.setItem(SAVE_TIME_KEY, saveTime);
+            // 更新显示最后保存时间
+            updateLastSaveTime();
+            // 显示保存提示
+            if (showTip) {
+                showSaveTip();
+            }
+        } catch (e) {
+            console.error('保存失败：', e);
+            alert('数据保存失败，请检查本地存储是否可用！');
+        }
+    }
+
+    // 显示保存提示
+    function showSaveTip() {
+        DOM.saveStatus.classList.add('show');
+        setTimeout(() => {
+            DOM.saveStatus.classList.remove('show');
+        }, 2000);
+    }
+
+    // 更新最后保存时间显示
+    function updateLastSaveTime() {
+        const saveTime = localStorage.getItem(SAVE_TIME_KEY) || '首次使用';
+        DOM.lastSaveTime.textContent = `上次保存：${saveTime}`;
+    }
+
+    // 手动保存
+    function manualSave() {
+        saveToHistory();
+        saveData(true);
+        alert('数据已手动保存成功！');
+    }
+
+    // 自动保存（每3分钟自动保存一次）
+    function startAutoSave() {
+        if (autoSaveTimer) clearInterval(autoSaveTimer);
+        autoSaveTimer = setInterval(() => {
+            saveData(false); // 自动保存不显示提示
+        }, 3 * 60 * 1000); // 3分钟
+    }
+
+    // 导出数据备份（JSON格式）
+    function exportBackup() {
+        const backupData = {
+            data: appData,
+            history: historyData,
+            saveTime: localStorage.getItem(SAVE_TIME_KEY),
+            exportTime: new Date().toLocaleString()
+        };
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `造价材料库备份_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('备份文件已导出！');
+    }
+
+    // 导入数据备份
+    function importBackup(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const backupData = JSON.parse(ev.target.result);
+                if (!backupData.data) {
+                    alert('备份文件格式错误！');
+                    return;
+                }
+                
+                if (confirm('确认导入备份？此操作将覆盖当前所有数据！')) {
+                    // 保存当前数据到历史
+                    saveToHistory();
+                    // 导入备份数据
+                    appData = backupData.data;
+                    historyData = backupData.history || [];
+                    // 保存并更新
+                    saveData(true);
+                    localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
+                    if (backupData.saveTime) {
+                        localStorage.setItem(SAVE_TIME_KEY, backupData.saveTime);
+                    }
+                    // 重新渲染
+                    renderMainCategoryTags();
+                    renderTable();
+                    updateLastSaveTime();
+                    alert('备份导入成功！');
+                }
+            } catch (err) {
+                alert('备份导入失败：' + err.message);
+                console.error(err);
+            }
+        };
+        reader.readAsText(file);
+        // 清空文件选择
+        DOM.restoreFile.value = '';
+    }
+
+    // ===================== 渲染优化 =====================
     function renderMainCategoryTags() {
-        mainTagContainer.innerHTML = '';
-        // 先加一个"全部"
+        const fragment = document.createDocumentFragment();
         const allTag = createTag("全部专业", "all");
-        mainTagContainer.appendChild(allTag);
-        // 再加预设的专业
+        fragment.appendChild(allTag);
         MAIN_CATEGORIES.forEach(cate => {
-            const tag = createTag(cate, cate);
-            mainTagContainer.appendChild(tag);
+            fragment.appendChild(createTag(cate, cate));
         });
+        DOM.mainTagContainer.innerHTML = '';
+        DOM.mainTagContainer.appendChild(fragment);
     }
 
-    // 创建标签的辅助函数
     function createTag(text, value) {
         const div = document.createElement('div');
         div.className = `tag ${value === currentMainCate ? 'active' : ''}`;
         div.textContent = text;
-        div.onclick = () => {
-            currentMainCate = value;
-            currentSubCate = "all"; // 切换专业时重置分部
-            // 更新标签样式
-            document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-            div.classList.add('active');
-            
-            // 显示或隐藏分部栏
-            if (value !== "all") {
-                subCategoryContainer.style.display = 'flex';
-                renderSubCategorySelect(value); // 渲染该专业下的分部下拉框
-            } else {
-                subCategoryContainer.style.display = 'none';
-            }
-            
-            renderTable(); // 刷新表格
-        };
+        div.dataset.value = value;
         return div;
     }
 
-    // 渲染分部工程下拉框
     function renderSubCategorySelect(mainCate) {
-        subCategorySelect.innerHTML = '<option value="all">全部分部</option>';
-        // 获取该专业下的所有分部
+        const fragment = document.createDocumentFragment();
+        const allOption = document.createElement('option');
+        allOption.value = "all";
+        allOption.textContent = "全部分部";
+        fragment.appendChild(allOption);
+
         const subs = appData.subCategories[mainCate] || [];
         subs.forEach(sub => {
             const option = document.createElement('option');
             option.value = sub;
             option.textContent = sub;
-            subCategorySelect.appendChild(option);
+            fragment.appendChild(option);
         });
-        // 绑定分部选择事件
-        subCategorySelect.onchange = () => {
-            currentSubCate = subCategorySelect.value;
-            renderTable();
-        };
+
+        DOM.subCategorySelect.innerHTML = '';
+        DOM.subCategorySelect.appendChild(fragment);
     }
 
-    // 添加新分部
-    addSubBtn.onclick = () => {
-        if (currentMainCate === "all") {
-            alert("请先选择一个专业类别！");
-            return;
-        }
-        const newSub = newSubNameInput.value.trim();
-        if (!newSub) {
-            alert("请输入分部名称！");
-            return;
-        }
-        // 检查是否已存在
-        if (appData.subCategories[currentMainCate].includes(newSub)) {
-            alert("该分部已存在！");
-            return;
-        }
-        // 添加到数据
-        appData.subCategories[currentMainCate].push(newSub);
-        saveData();
-        // 重新渲染下拉框
-        renderSubCategorySelect(currentMainCate);
-        // 清空输入框
-        newSubNameInput.value = '';
-        alert(`成功添加分部：${newSub}`);
-    };
-
-    // ===================== 2. 材料表格渲染与编辑 =====================
     function renderTable() {
-        // 筛选逻辑
+        const filteredData = filterData();
+        
+        const fragment = document.createDocumentFragment();
+        if (filteredData.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="10" class="no-result">暂无材料数据</td>`;
+            fragment.appendChild(tr);
+        } else {
+            filteredData.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.dataset.id = item.id;
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td class="editable" data-field="mainCate">${item.mainCate}</td>
+                    <td class="editable" data-field="subCate">${item.subCate}</td>
+                    <td class="editable" data-field="name">${item.name}</td>
+                    <td class="editable" data-field="unit">${item.unit}</td>
+                    <td class="editable" data-field="price">${item.price}</td>
+                    <td class="editable" data-field="tax">${item.tax}</td>
+                    <td class="editable" data-field="spec">${item.spec}</td>
+                    <td class="editable" data-field="remark">${item.remark}</td>
+                    <td><button class="btn btn-danger del-btn" style="padding:3px 6px;font-size:0.75rem;">删除</button></td>
+                `;
+                fragment.appendChild(tr);
+            });
+        }
+
+        DOM.tableBody.innerHTML = '';
+        DOM.tableBody.appendChild(fragment);
+    }
+
+    function filterData() {
         let filtered = [...appData.materials];
         
-        // 1. 按主专业筛选
         if (currentMainCate !== "all") {
             filtered = filtered.filter(item => item.mainCate === currentMainCate);
         }
-        // 2. 按分部筛选
         if (currentSubCate !== "all" && currentMainCate !== "all") {
             filtered = filtered.filter(item => item.subCate === currentSubCate);
         }
-        // 3. 按搜索关键词筛选
-        const kw = searchInput.value.toLowerCase().trim();
+        const kw = DOM.searchInput.value.toLowerCase().trim();
         if (kw) {
             filtered = filtered.filter(item => 
                 item.name.toLowerCase().includes(kw) ||
@@ -368,160 +585,256 @@
             );
         }
 
-        // 渲染到表格
-        tableBody.innerHTML = '';
-        if (filtered.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="10" class="no-result">暂无材料数据</td></tr>`;
-            return;
-        }
-
-        filtered.forEach((item, index) => {
-            const tr = document.createElement('tr');
-            tr.dataset.id = item.id;
-            tr.innerHTML = `
-                <td>${index + 1}</td>
-                <td class="editable" data-field="mainCate">${item.mainCate}</td>
-                <td class="editable" data-field="subCate">${item.subCate}</td>
-                <td class="editable" data-field="name">${item.name}</td>
-                <td class="editable" data-field="unit">${item.unit}</td>
-                <td class="editable" data-field="price">${item.price}</td>
-                <td class="editable" data-field="tax">${item.tax}</td>
-                <td class="editable" data-field="spec">${item.spec}</td>
-                <td class="editable" data-field="remark">${item.remark}</td>
-                <td><button class="btn btn-danger" style="padding:4px 8px;font-size:0.8rem;">删除</button></td>
-            `;
-            tableBody.appendChild(tr);
-        });
+        return filtered;
     }
 
-    // 表格单元格点击编辑 (核心功能：全自由输入)
-    tableBody.addEventListener('click', (e) => {
-        const target = e.target;
-
-        // --- 删除功能 ---
-        if (target.textContent === "删除") {
-            const id = parseInt(target.closest('tr').dataset.id);
-            if (confirm("确定删除该材料吗？")) {
-                appData.materials = appData.materials.filter(m => m.id !== id);
-                saveData();
-                renderTable();
+    // ===================== 事件绑定 =====================
+    function bindEvents() {
+        // 专业标签点击
+        DOM.mainTagContainer.addEventListener('click', (e) => {
+            const target = e.target.closest('.tag');
+            if (!target) return;
+            
+            const value = target.dataset.value;
+            if (value === currentMainCate) return;
+            
+            currentMainCate = value;
+            currentSubCate = "all";
+            
+            document.querySelectorAll('.tag').forEach(t => t.classList.toggle('active', t.dataset.value === value));
+            DOM.subCategoryContainer.style.display = value !== "all" ? 'flex' : 'none';
+            if (value !== "all") {
+                renderSubCategorySelect(value);
             }
-            return;
-        }
+            
+            renderTable();
+        });
 
-        // --- 编辑功能 ---
-        if (!target.classList.contains('editable')) return;
-        
-        const field = target.dataset.field;
-        const id = parseInt(target.closest('tr').dataset.id);
-        const material = appData.materials.find(m => m.id === id);
-        if (!material) return;
+        // 分部选择
+        DOM.subCategorySelect.addEventListener('change', () => {
+            currentSubCate = DOM.subCategorySelect.value;
+            renderTable();
+        });
 
-        const currentValue = target.textContent;
+        // 添加分部
+        let addSubBtnLock = false;
+        DOM.addSubBtn.addEventListener('click', () => {
+            if (addSubBtnLock) return;
+            addSubBtnLock = true;
+            
+            if (currentMainCate === "all") {
+                alert("请先选择一个专业类别！");
+                addSubBtnLock = false;
+                return;
+            }
+            
+            const newSub = DOM.newSubNameInput.value.trim();
+            if (!newSub) {
+                alert("请输入分部名称！");
+                addSubBtnLock = false;
+                return;
+            }
+            
+            if (appData.subCategories[currentMainCate].includes(newSub)) {
+                alert("该分部已存在！");
+                addSubBtnLock = false;
+                return;
+            }
+            
+            saveToHistory();
+            appData.subCategories[currentMainCate].push(newSub);
+            saveData(); // 保存数据
+            renderSubCategorySelect(currentMainCate);
+            DOM.newSubNameInput.value = '';
+            
+            alert(`成功添加分部：${newSub}`);
+            addSubBtnLock = false;
+        });
+
+        // 表格操作
+        DOM.tableBody.addEventListener('click', (e) => {
+            const target = e.target;
+            const tr = target.closest('tr');
+            if (!tr || !tr.dataset.id) return;
+            
+            const id = parseInt(tr.dataset.id);
+            
+            // 删除操作
+            if (target.classList.contains('del-btn')) {
+                if (confirm("确定删除该材料吗？")) {
+                    saveToHistory();
+                    appData.materials = appData.materials.filter(m => m.id !== id);
+                    saveData(); // 保存数据
+                    renderTable();
+                }
+                return;
+            }
+            
+            // 编辑操作
+            const editable = target.closest('.editable');
+            if (!editable) return;
+            
+            const field = editable.dataset.field;
+            const material = appData.materials.find(m => m.id === id);
+            if (!material) return;
+            
+            editCell(editable, material, field);
+        });
+
+        // 新增材料
+        let addMaterialBtnLock = false;
+        DOM.addMaterialBtn.addEventListener('click', () => {
+            if (addMaterialBtnLock) return;
+            addMaterialBtnLock = true;
+            
+            let defaultMain = currentMainCate;
+            let defaultSub = "未分类";
+
+            if (defaultMain !== "all" && appData.subCategories[defaultMain]?.length) {
+                defaultSub = appData.subCategories[defaultMain][0];
+            } else if (defaultMain === "all") {
+                defaultMain = "土建";
+                defaultSub = appData.subCategories["土建"][0];
+            }
+
+            const newId = appData.materials.length 
+                ? Math.max(...appData.materials.map(m => m.id)) + 1 
+                : 1;
+
+            saveToHistory();
+            appData.materials.push({
+                id: newId,
+                mainCate: defaultMain,
+                subCate: defaultSub,
+                name: "请输入材料名称",
+                unit: "m³",
+                price: 0,
+                tax: 9,
+                spec: "",
+                remark: ""
+            });
+            
+            saveData(); // 保存数据
+            renderTable();
+            
+            const newRow = document.querySelector(`tr[data-id="${newId}"]`);
+            if (newRow) newRow.scrollIntoView({ behavior: 'smooth' });
+            
+            addMaterialBtnLock = false;
+        });
+
+        // 搜索防抖
+        DOM.searchInput.addEventListener('input', () => {
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                renderTable();
+            }, 300);
+        });
+
+        // 导出功能
+        DOM.exportBtn.addEventListener('click', exportData);
+
+        // 导入功能
+        DOM.fileInput.addEventListener('change', importData);
+
+        // 刷新功能
+        DOM.refreshBtn.addEventListener('click', refreshData);
+
+        // 撤销功能
+        DOM.undoBtn.addEventListener('click', undoOperation);
+
+        // 清空功能
+        DOM.clearBtn.addEventListener('click', clearAllData);
+
+        // 手动保存按钮
+        DOM.saveBtn.addEventListener('click', manualSave);
+
+        // 导出备份
+        DOM.backupBtn.addEventListener('click', exportBackup);
+
+        // 导入备份
+        DOM.restoreBtn.addEventListener('click', () => {
+            DOM.restoreFile.click();
+        });
+        DOM.restoreFile.addEventListener('change', importBackup);
+    }
+
+    // ===================== 编辑单元格 =====================
+    function editCell(cell, material, field) {
+        const currentValue = cell.textContent;
         let inputElement;
 
-        // 特殊处理：专业类别用下拉框，其他全部用自由输入框
         if (field === 'mainCate') {
-            // 专业类别：下拉选择
-            inputElement = document.createElement('select');
-            inputElement.className = 'edit-select';
-            MAIN_CATEGORIES.forEach(cate => {
-                const opt = document.createElement('option');
-                opt.value = cate;
-                opt.textContent = cate;
-                if (cate === currentValue) opt.selected = true;
-                inputElement.appendChild(opt);
-            });
-        } 
-        else if (field === 'subCate') {
-            // 分部工程：下拉选择（联动当前专业）
-            inputElement = document.createElement('select');
-            inputElement.className = 'edit-select';
-            const currentMain = material.mainCate;
-            const subs = appData.subCategories[currentMain] || [];
-            subs.forEach(sub => {
-                const opt = document.createElement('option');
-                opt.value = sub;
-                opt.textContent = sub;
-                if (sub === currentValue) opt.selected = true;
-                inputElement.appendChild(opt);
-            });
-        } 
-        else {
-            // 材料名称、单位、价格、税率、规格、备注：全自由输入
+            inputElement = createSelect(MAIN_CATEGORIES, currentValue);
+        } else if (field === 'subCate') {
+            const subs = appData.subCategories[material.mainCate] || [];
+            inputElement = createSelect(subs, currentValue);
+        } else {
             inputElement = document.createElement('input');
             inputElement.className = 'edit-input';
-            // 价格和税率设为数字输入，其余为文本
             inputElement.type = (field === 'price' || field === 'tax') ? 'number' : 'text';
             inputElement.value = currentValue;
-            // 价格和税率允许小数
             if (field === 'price' || field === 'tax') {
                 inputElement.step = "0.01";
             }
         }
 
-        // 替换单元格内容为输入框
-        target.innerHTML = '';
-        target.appendChild(inputElement);
+        cell.innerHTML = '';
+        cell.appendChild(inputElement);
         inputElement.focus();
 
-        // 保存逻辑：失焦或回车
         const saveEdit = () => {
             const newValue = inputElement.value.trim();
-            if (newValue || newValue === "0") { // 允许价格为0
+            if (newValue || newValue === "0") {
+                saveToHistory();
                 material[field] = (field === 'price' || field === 'tax') ? parseFloat(newValue) : newValue;
-                saveData();
+                saveData(); // 保存数据
                 renderTable();
+            }
+            inputElement.removeEventListener('blur', saveEdit);
+            inputElement.removeEventListener('keydown', keyDownHandler);
+        };
+
+        const keyDownHandler = (e) => {
+            if (e.key === 'Enter') {
+                saveEdit();
             }
         };
 
         inputElement.addEventListener('blur', saveEdit);
-        inputElement.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') saveEdit();
+        inputElement.addEventListener('keydown', keyDownHandler);
+    }
+
+    function createSelect(options, selectedValue) {
+        const select = document.createElement('select');
+        select.className = 'edit-select';
+        
+        const fragment = document.createDocumentFragment();
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt;
+            option.textContent = opt;
+            if (opt === selectedValue) option.selected = true;
+            fragment.appendChild(option);
         });
-    });
+        
+        select.appendChild(fragment);
+        return select;
+    }
 
-    // ===================== 3. 新增材料 =====================
-    addMaterialBtn.onclick = () => {
-        // 默认值：取当前选中的专业和第一个分部
-        let defaultMain = currentMainCate;
-        let defaultSub = "未分类";
-
-        if (defaultMain !== "all" && appData.subCategories[defaultMain] && appData.subCategories[defaultMain].length > 0) {
-            defaultSub = appData.subCategories[defaultMain][0];
-        } else if (defaultMain === "all") {
-            defaultMain = "土建"; // 默认土建
-            defaultSub = appData.subCategories["土建"][0];
+    // ===================== 辅助功能 =====================
+    function saveToHistory() {
+        const dataStr = JSON.stringify(appData);
+        if (historyData.length && historyData[historyData.length - 1] === dataStr) return;
+        
+        historyData.push(dataStr);
+        if (historyData.length > MAX_HISTORY) {
+            historyData.shift();
         }
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
+    }
 
-        const newId = appData.materials.length 
-            ? Math.max(...appData.materials.map(m => m.id)) + 1 
-            : 1;
-
-        const newMat = {
-            id: newId,
-            mainCate: defaultMain,
-            subCate: defaultSub,
-            name: "请输入材料名称", // 可手动修改
-            unit: "m³",             // 可手动修改
-            price: 0,               // 可手动修改
-            tax: 9,                 // 可手动修改
-            spec: "",               // 可手动修改
-            remark: ""              // 可手动修改
-        };
-
-        appData.materials.push(newMat);
-        saveData();
-        renderTable();
-
-        // 滚动到新增行
-        const newRow = document.querySelector(`tr[data-id="${newId}"]`);
-        if (newRow) newRow.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    // ===================== 4. 导入与导出 =====================
-    // 导出
-    exportBtn.onclick = () => {
+    function exportData() {
         const exportData = appData.materials.map(m => ({
             序号: m.id,
             专业类别: m.mainCate,
@@ -533,16 +846,17 @@
             规格型号: m.spec,
             备注: m.remark
         }));
+        
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "材料库");
         XLSX.writeFile(wb, `工程造价材料库_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
-    };
+    }
 
-    // 导入
-    fileInput.onchange = (e) => {
+    function importData(e) {
         const file = e.target.files[0];
         if (!file) return;
+        
         const reader = new FileReader();
         reader.onload = (ev) => {
             try {
@@ -552,16 +866,14 @@
                 const ws = wb.Sheets[wsname];
                 const imported = XLSX.utils.sheet_to_json(ws);
 
-                const maxId = appData.materials.length 
-                    ? Math.max(...appData.materials.map(m => m.id)) 
-                    : 0;
-
+                saveToHistory();
+                const maxId = appData.materials.length ? Math.max(...appData.materials.map(m => m.id)) : 0;
                 let successCount = 0;
+
                 imported.forEach((item, i) => {
                     const mainCate = item['专业类别'] || item['mainCate'] || '其他';
                     const subCate = item['分部工程'] || item['subCate'] || '未分类';
                     
-                    // 如果导入的分部不存在，自动添加到该专业下
                     if (!appData.subCategories[mainCate]) {
                         appData.subCategories[mainCate] = [];
                     }
@@ -569,7 +881,7 @@
                         appData.subCategories[mainCate].push(subCate);
                     }
 
-                    const mat = {
+                    appData.materials.push({
                         id: maxId + i + 1,
                         mainCate: mainCate,
                         subCate: subCate,
@@ -579,40 +891,66 @@
                         tax: parseFloat(item['税率_百分比'] || item['税率'] || item['tax'] || 9),
                         spec: item['规格型号'] || item['spec'] || '',
                         remark: item['备注'] || item['remark'] || ''
-                    };
-                    appData.materials.push(mat);
+                    });
                     successCount++;
                 });
 
-                saveData();
+                saveData(); // 保存数据
                 renderTable();
                 alert(`成功导入 ${successCount} 条材料，自动创建了新的分部类别。`);
-                fileInput.value = '';
+                DOM.fileInput.value = '';
             } catch (err) {
                 alert('导入失败！请检查文件格式是否正确。');
                 console.error(err);
             }
         };
         reader.readAsArrayBuffer(file);
-    };
-
-    // ===================== 5. 辅助功能 =====================
-    // 清空数据
-    clearBtn.onclick = () => {
-        if (confirm('警告：此操作将清空所有材料和分部数据，是否继续？')) {
-            localStorage.removeItem('costLibFinal');
-            location.reload(); // 刷新页面恢复默认值
-        }
-    };
-
-    // 搜索功能
-    searchInput.addEventListener('input', renderTable);
-
-    // 保存数据到本地
-    function saveData() {
-        localStorage.setItem('costLibFinal', JSON.stringify(appData));
     }
+
+    function refreshData() {
+        saveToHistory();
+        appData = localStorage.getItem(DATA_KEY) ? JSON.parse(localStorage.getItem(DATA_KEY)) : getDefaultData();
+        renderMainCategoryTags();
+        renderTable();
+        updateLastSaveTime(); // 更新保存时间
+        alert("数据已刷新完成！");
+    }
+
+    function undoOperation() {
+        if (historyData.length === 0) {
+            alert("暂无可撤销的操作记录！");
+            return;
+        }
+        
+        const lastHistory = historyData.pop();
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
+        appData = JSON.parse(lastHistory);
+        saveData(); // 保存数据
+        renderMainCategoryTags();
+        renderTable();
+        updateLastSaveTime(); // 更新保存时间
+        alert("已撤销上一次操作！");
+    }
+
+    function clearAllData() {
+        if (confirm('警告：此操作将清空所有材料和分部数据，是否继续？')) {
+            saveToHistory();
+            localStorage.removeItem(DATA_KEY);
+            location.reload();
+        }
+    }
+
+    // ===================== 初始化 =====================
+    function init() {
+        initData();
+        renderMainCategoryTags();
+        bindEvents();
+        renderTable();
+        startAutoSave(); // 启动自动保存
+    }
+
+    // 启动应用
+    init();
 </script>
 </body>
-
 </html>
